@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PisoEstima · Estimador de precios inmobiliarios en Madrid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300..700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f1ec; --surface: #ffffff; --surface-2: #f8f7f4;
+      --border: rgba(0,0,0,0.08); --text: #1a1a1a; --text-muted: #5a5a5a; --text-faint: #999;
+      --primary: #0f766e; --primary-hover: #0d5e57; --primary-highlight: #e0f7f5;
+      --accent: #c17f24;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06); --shadow-md: 0 8px 24px rgba(0,0,0,0.09); --shadow-lg: 0 20px 50px rgba(0,0,0,0.11);
+      --radius-sm: 6px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 26px;
+      --font-display: 'Instrument Serif', Georgia, serif; --font-body: 'Work Sans', 'Helvetica Neue', sans-serif;
+    }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(244,241,236,0.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 1.3rem; color: var(--text); text-decoration: none; }
+    .nav-logo svg { color: var(--primary); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 160ms ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--primary); color: white !important; padding: 8px 18px; border-radius: var(--radius-sm); font-weight: 600 !important; }
+    .nav-cta:hover { background: var(--primary-hover) !important; }
+
+    /* HERO */
+    .hero { max-width: 1100px; margin: 0 auto; padding: 80px 24px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--primary-highlight); color: var(--primary); padding: 5px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(2.2rem, 4vw, 3.4rem); line-height: 1.15; margin-bottom: 20px; }
+    .hero h1 em { font-style: italic; color: var(--primary); }
+    .hero p { font-size: 1.05rem; color: var(--text-muted); max-width: 48ch; margin-bottom: 32px; line-height: 1.75; }
+    .hero-stats { display: flex; gap: 28px; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-num { font-family: var(--font-display); font-size: 1.8rem; line-height: 1; }
+    .stat-label { font-size: 0.8rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+    .hero-visual { position: relative; height: 340px; background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; }
+    .hero-visual-bg { position: absolute; inset: 0; background: radial-gradient(circle at 30% 40%, rgba(15,118,110,0.12) 0%, transparent 55%), radial-gradient(circle at 70% 70%, rgba(193,127,36,0.08) 0%, transparent 50%), #f0ede8; }
+    .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 32px 32px; }
+    .map-district { position: absolute; border-radius: 6px; background: rgba(15,118,110,0.08); border: 1.5px solid rgba(15,118,110,0.2); }
+    .d1{width:120px;height:90px;top:60px;left:50px;} .d2{width:80px;height:110px;top:50px;left:175px;} .d3{width:100px;height:75px;top:160px;left:90px;} .d4{width:60px;height:60px;top:150px;left:200px;} .d5{width:140px;height:55px;top:230px;left:80px;} .d6{width:70px;height:80px;top:70px;right:60px;background:rgba(193,127,36,0.08);border-color:rgba(193,127,36,0.25);} .d7{width:90px;height:60px;top:160px;right:45px;background:rgba(193,127,36,0.06);border-color:rgba(193,127,36,0.2);}
+    .price-pin { position: absolute; background: var(--primary); color: white; padding: 6px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; box-shadow: 0 4px 12px rgba(15,118,110,0.35); transition: transform 200ms ease; cursor: default; }
+    .price-pin:hover { transform: scale(1.06); }
+    .price-pin.alt { background: var(--accent); box-shadow: 0 4px 12px rgba(193,127,36,0.35); }
+    .pin1{top:72px;left:76px;} .pin2{top:168px;left:108px;} .pin3{top:130px;left:195px;} .pin4{top:238px;left:112px;} .pin5{top:88px;right:52px;} .pin6{top:175px;right:36px;}
+    .hero-visual-label { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-radius: 8px; padding: 6px 16px; font-size: 0.78rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+
+    /* PAIN POINTS */
+    .pain-section { background: #1a1a1a; padding: 88px 24px; overflow: hidden; position: relative; }
+    .pain-section::before { content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 700px; height: 400px; background: radial-gradient(ellipse, rgba(15,118,110,0.18) 0%, transparent 70%); pointer-events: none; }
+    .pain-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; }
+    .pain-overline { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #4f98a3; margin-bottom: 18px; }
+    .pain-title { font-family: var(--font-display); font-size: clamp(1.9rem, 3.5vw, 3rem); color: #fff; line-height: 1.2; margin-bottom: 24px; }
+    .pain-title em { font-style: italic; color: #4f98a3; }
+    .pain-desc { font-size: 1rem; color: rgba(255,255,255,0.55); line-height: 1.75; max-width: 44ch; margin-bottom: 36px; }
+    .pain-cta { display: inline-flex; align-items: center; gap: 10px; background: var(--primary); color: white; padding: 13px 26px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: background 160ms ease, transform 120ms ease; }
+    .pain-cta:hover { background: var(--primary-hover); transform: translateY(-2px); }
+    .pain-right { display: flex; flex-direction: column; gap: 14px; }
+    .pain-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); padding: 22px 24px; display: flex; align-items: flex-start; gap: 16px; transition: background 220ms ease, border-color 220ms ease, transform 220ms ease; cursor: default; }
+    .pain-card:hover { background: rgba(15,118,110,0.12); border-color: rgba(15,118,110,0.35); transform: translateX(6px); }
+    .pain-icon { width: 42px; height: 42px; flex-shrink: 0; background: rgba(255,255,255,0.06); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .pain-q { font-weight: 700; font-size: 0.95rem; color: rgba(255,255,255,0.9); margin-bottom: 4px; line-height: 1.4; }
+    .pain-a { font-size: 0.83rem; color: rgba(255,255,255,0.45); line-height: 1.55; }
+    .pain-divider { height: 1px; background: linear-gradient(90deg, rgba(15,118,110,0.6), transparent); margin: 10px 0; }
+    .pain-resolution { background: rgba(15,118,110,0.15); border: 1px solid rgba(15,118,110,0.3); border-radius: var(--radius-lg); padding: 22px 24px; display: flex; align-items: center; gap: 16px; }
+    .pain-resolution-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .pain-resolution-text { font-size: 0.92rem; color: #7fcfcb; font-weight: 600; line-height: 1.5; }
+    .pain-resolution-text span { display: block; font-size: 0.8rem; font-weight: 400; color: rgba(127,207,203,0.65); margin-top: 3px; }
+
+    /* CÓMO FUNCIONA */
+    .how-section { background: var(--surface); padding: 72px 24px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .section-label { text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; }
+    .section-title { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.4rem); text-align: center; margin-bottom: 10px; }
+    .section-subtitle { text-align: center; color: var(--text-muted); font-size: 1rem; max-width: 52ch; margin: 0 auto 52px; line-height: 1.7; }
+    .steps { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .step { text-align: center; padding: 32px 24px; background: var(--surface-2); border-radius: var(--radius-lg); border: 1px solid var(--border); }
+    .step-num { width: 44px; height: 44px; background: var(--primary); color: white; border-radius: 50%; font-family: var(--font-display); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .step h3 { font-weight: 700; font-size: 1rem; margin-bottom: 10px; }
+    .step p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* FORM */
+    .form-section { max-width: 1100px; margin: 0 auto; padding: 72px 24px; }
+    .form-card { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; display: grid; grid-template-columns: 1fr 1.6fr; }
+    .form-sidebar { background: linear-gradient(160deg, #0d5e57 0%, #0f766e 60%, #10908a 100%); padding: 48px 36px; display: flex; flex-direction: column; justify-content: space-between; color: white; }
+    .form-sidebar h2 { font-family: var(--font-display); font-size: 1.85rem; line-height: 1.2; margin-bottom: 16px; }
+    .form-sidebar p { font-size: 0.9rem; opacity: 0.82; line-height: 1.7; margin-bottom: 36px; }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .feature-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.875rem; opacity: 0.9; }
+    .feature-list li::before { content: '✓'; flex-shrink: 0; width: 20px; height: 20px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; margin-top: 1px; }
+    .sidebar-note { margin-top: 48px; padding: 16px; background: rgba(255,255,255,0.1); border-radius: var(--radius-md); font-size: 0.82rem; opacity: 0.8; line-height: 1.6; }
+    .form-body { padding: 48px 40px; }
+    .form-sec-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 16px; margin-top: 28px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .form-sec-title:first-of-type { margin-top: 0; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1/-1; }
+    label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+    .req { color: var(--primary); margin-left: 2px; }
+    input, select { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.9rem; color: var(--text); background: var(--surface-2); outline: none; transition: border-color 160ms ease, box-shadow 160ms ease; width: 100%; }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); background: #fff; }
+    input::placeholder { color: var(--text-faint); }
+
+    /* Barrio toggle */
+    .location-toggle { display: flex; gap: 10px; margin-bottom: 16px; }
+    .toggle-btn { flex: 1; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 160ms ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .toggle-btn.active { background: var(--primary-highlight); border-color: var(--primary); color: var(--primary); }
+    .toggle-btn:hover:not(.active) { border-color: rgba(15,118,110,0.3); color: var(--text); }
+
+    .location-panel { display: none; }
+    .location-panel.visible { display: block; }
+
+    /* Badge de barrio seleccionado */
+    .barrio-badge { display: none; align-items: center; gap: 6px; margin-top: 8px; background: var(--primary-highlight); color: var(--primary); padding: 5px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; width: fit-content; }
+    .barrio-badge.visible { display: flex; }
+
+    .btn-submit { width: 100%; margin-top: 28px; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 160ms ease, transform 120ms ease, box-shadow 160ms ease; box-shadow: 0 4px 14px rgba(15,118,110,0.3); }
+    .btn-submit:hover { background: var(--primary-hover); box-shadow: 0 6px 20px rgba(15,118,110,0.4); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* Resultado */
+    .result-box { margin-top: 24px; border-radius: var(--radius-md); overflow: hidden; animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .result-header { background: var(--primary); padding: 20px 24px; display: flex; align-items: center; gap: 14px; }
+    .result-icon { width: 42px; height: 42px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .result-label { color: rgba(255,255,255,0.8); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .result-price { color: white; font-family: var(--font-display); font-size: 2rem; line-height: 1; }
+    .result-body { background: var(--primary-highlight); padding: 16px 24px; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .error-box { margin-top: 24px; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: var(--radius-md); padding: 16px 20px; color: #991b1b; font-size: 0.88rem; animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1); }
+
+    footer { background: #111; color: rgba(255,255,255,0.45); padding: 40px 24px; text-align: center; font-size: 0.82rem; }
+    footer strong { color: white; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; } .hero-visual { display: none; }
+      .pain-inner { grid-template-columns: 1fr; gap: 48px; }
+      .form-card { grid-template-columns: 1fr; }
+      .form-sidebar { padding: 36px 28px; } .form-body { padding: 36px 28px; }
+      .steps { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 580px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; gap: 16px; }
+      .nav-links { display: none; }
+    }
+  
+    /* EQUIPO */
+    .team-section { background: #1a1a1a; padding: 88px 24px; }
+    .team-inner { max-width: 1100px; margin: 0 auto; }
+    .team-title { font-family: var(--font-display); font-size: clamp(1.9rem, 3.5vw, 3rem); color: #fff; text-align: center; margin-bottom: 14px; }
+    .team-subtitle { text-align: center; color: rgba(255,255,255,0.5); font-size: 1rem; max-width: 52ch; margin: 0 auto 52px; line-height: 1.75; }
+    .team-subtitle em { font-style: italic; color: #4f98a3; }
+    .team-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+    .team-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-xl); padding: 36px 28px; text-align: center; transition: transform 220ms ease, background 220ms ease, border-color 220ms ease; }
+    .team-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+    .team-card.featured { border-color: rgba(193,127,36,0.4); background: rgba(193,127,36,0.06); }
+    .team-card.featured:hover { border-color: rgba(193,127,36,0.7); background: rgba(193,127,36,0.1); }
+    .team-avatar { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 2rem; color: white; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .team-name { font-family: var(--font-display); font-size: 1.5rem; color: #fff; margin-bottom: 4px; }
+    .team-role { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #4f98a3; margin-bottom: 16px; }
+    .team-card.featured .team-role { color: #4f98a3; }
+    .team-quote { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.65; font-style: italic; margin-bottom: 20px; min-height: 70px; }
+    .team-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .tag { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; }
+    .team-footer-note { background: rgba(15,118,110,0.12); border: 1px solid rgba(15,118,110,0.25); border-radius: var(--radius-lg); padding: 28px 32px; display: flex; align-items: flex-start; gap: 20px; }
+    .trust-badge { font-size: 2.2rem; flex-shrink: 0; margin-top: 2px; }
+    .team-footer-note strong { display: block; color: #7fcfcb; font-size: 1rem; margin-bottom: 6px; }
+    .team-footer-note p { color: rgba(255,255,255,0.45); font-size: 0.88rem; line-height: 1.7; max-width: 70ch; }
+
+    .project-stats { display: flex; justify-content: center; gap: 0; margin-bottom: 8px; flex-wrap: wrap; }
+    .pstat { flex: 1; min-width: 120px; text-align: center; padding: 24px 16px; border-right: 1px solid rgba(255,255,255,0.06); }
+    .pstat:last-child { border-right: none; }
+    .pstat-num { font-family: var(--font-display); font-size: 2.2rem; color: #fff; line-height: 1; margin-bottom: 6px; }
+    .pstat-label { font-size: 0.75rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.07em; }
+    @media (max-width: 900px) { .team-cards { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; } }
+
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <rect x="3" y="14" width="7" height="10" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="10" y="9" width="6" height="15" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="16" y="12" width="7" height="12" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M1 14 L6.5 8 L13 4 L19.5 7.5 L25 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="13" cy="4" r="1.8" fill="currentColor"/>
+      </svg>
+      PisoEstima
+    </a>
+    <ul class="nav-links">
+      <li><a href="#problema">¿Te suena esto?</a></li>
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#estimador">Estimador</a></li>
+      <li><a href="#equipo">El equipo</a></li>
+      <li><a href="#estimador" class="nav-cta">Estimar ahora →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div>
+    <div class="hero-badge">
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+      Modelo ML entrenado con datos reales de Madrid
+    </div>
+    <h1>Descubre el precio <em>justo</em> de tu vivienda en Madrid</h1>
+    <p>Inteligencia artificial entrenada con miles de anuncios inmobiliarios reales para darte una estimación de mercado en segundos — sin agencias, sin esperas, sin sorpresas.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">~81%</span><span class="stat-label">Precisión del modelo</span></div>
+      <div class="stat"><span class="stat-num">Madrid</span><span class="stat-label">Cobertura</span></div>
+      <div class="stat"><span class="stat-num">&lt; 1s</span><span class="stat-label">Tiempo de respuesta</span></div>
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hero-visual-bg"></div><div class="map-grid"></div>
+    <div class="map-district d1"></div><div class="map-district d2"></div><div class="map-district d3"></div>
+    <div class="map-district d4"></div><div class="map-district d5"></div><div class="map-district d6"></div><div class="map-district d7"></div>
+    <div class="price-pin pin1">€ 210.000</div><div class="price-pin pin2">€ 148.000</div>
+    <div class="price-pin alt pin3">€ 365.000</div><div class="price-pin pin4">€ 182.000</div>
+    <div class="price-pin alt pin5">€ 490.000</div><div class="price-pin pin6">€ 275.000</div>
+    <div class="hero-visual-label">📍 Estimaciones en toda la Comunidad de Madrid</div>
+  </div>
+</section>
+
+<!-- PAIN POINTS -->
+<section class="pain-section" id="problema">
+  <div class="pain-inner">
+    <div>
+      <p class="pain-overline">¿Te identificas?</p>
+      <h2 class="pain-title">El mercado inmobiliario madrileño puede ser un <em>laberinto</em></h2>
+      <p class="pain-desc">Vender, comprar o simplemente entender cuánto vale un piso en Madrid no debería ser tan complicado. Sin información clara, es fácil salir perdiendo.</p>
+      <a href="#estimador" class="pain-cta">Quiero saber el precio real <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="pain-right">
+      <div class="pain-card"><div class="pain-icon">🏠</div><div><div class="pain-q">¿Querés vender tu piso y no sabés por cuánto?</div><div class="pain-a">Poner un precio demasiado alto espanta compradores. Demasiado bajo y perdés miles de euros. Sin referencias reales del mercado, es una apuesta a ciegas.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">📋</div><div><div class="pain-q">¿Un tasador o agencia te dio un precio y no sabés si fue justo?</div><div class="pain-a">Las tasaciones tienen intereses propios. Con PisoEstima tenés un punto de comparación independiente, basado solo en datos del mercado.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">🔍</div><div><div class="pain-q">¿Estás buscando piso y querés saber si el precio es razonable?</div><div class="pain-a">Antes de hacer una oferta o firmar, comprobá si el precio que piden está alineado con el mercado real de esa zona.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">📊</div><div><div class="pain-q">¿Te pica la curiosidad de cuánto vale tu casa hoy?</div><div class="pain-a">El mercado cambia. Lo que valía tu piso hace 3 años puede ser muy distinto ahora. Tenelo claro en segundos.</div></div></div>
+      <div class="pain-divider"></div>
+      <div class="pain-resolution"><div class="pain-resolution-icon">✅</div><div class="pain-resolution-text">PisoEstima está aquí para eso.<span>Una estimación honesta, basada en datos reales, en menos de un minuto. Sin agencias, sin comisiones.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section class="how-section" id="como-funciona">
+  <p class="section-label">Metodología</p>
+  <h2 class="section-title">¿Cómo funciona PisoEstima?</h2>
+  <p class="section-subtitle">Un sistema de machine learning entrenado con anuncios reales que aprende los factores clave que determinan el precio de un piso en Madrid.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><h3>Datos reales de mercado</h3><p>El modelo se entrenó con miles de anuncios inmobiliarios reales de Madrid, incluyendo superficie, ubicación, características del edificio y puntos de interés cercanos.</p></div>
+    <div class="step"><div class="step-num">2</div><h3>Elegís el barrio o coordenadas</h3><p>Podés seleccionar directamente el barrio de Madrid — el sistema asigna automáticamente las coordenadas. O introducir latitud/longitud si querés mayor precisión.</p></div>
+    <div class="step"><div class="step-num">3</div><h3>Predicción instantánea</h3><p>El modelo predice el precio de mercado en milisegundos. Los valores no introducidos se imputan automáticamente con la mediana del mercado madrileño.</p></div>
+  </div>
+</section>
+
+<!-- FORMULARIO -->
+<section class="form-section" id="estimador">
+  <div class="form-card">
+    <div class="form-sidebar">
+      <div>
+        <h2>Estimá el precio de tu piso</h2>
+        <p>Introducí los datos de la vivienda. Los campos marcados con <strong>•</strong> son obligatorios. Los demás son opcionales y mejoran la precisión.</p>
+        <ul class="feature-list">
+          <li>Elegí el barrio sin saber coordenadas</li>
+          <li>Estimación basada en datos reales del mercado</li>
+          <li>Sin registro ni datos personales</li>
+          <li>Resultado en menos de 1 segundo</li>
+          <li>Valores opcionales mejoran la precisión</li>
+        </ul>
+      </div>
+      <div class="sidebar-note">⚠️ Estimación orientativa basada en ML. No sustituye la tasación oficial de un profesional inmobiliario.</div>
+    </div>
+
+    <div class="form-body">
+      <form action="/predict-form" method="POST" id="predict-form">
+
+        <div class="form-sec-title">Datos básicos <span style="color:var(--primary)">• obligatorios</span></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="superficie_m2">Superficie (m²) <span class="req">•</span></label>
+            <input type="number" step="any" name="superficie_m2" id="superficie_m2" placeholder="ej. 80" required value="{{ form_data.superficie_m2 if form_data else '' }}">
+          </div>
+          <div class="form-group">
+            <label for="dormitorios">Dormitorios <span class="req">•</span></label>
+            <input type="number" step="1" min="0" name="dormitorios" id="dormitorios" placeholder="ej. 3" required value="{{ form_data.dormitorios if form_data else '' }}">
+          </div>
+          <div class="form-group">
+            <label for="banos">Baños <span class="req">•</span></label>
+            <input type="number" step="1" min="0" name="banos" id="banos" placeholder="ej. 1" required value="{{ form_data.banos if form_data else '' }}">
+          </div>
+          <div class="form-group">
+            <label for="build_year">Año de construcción</label>
+            <input type="number" step="1" min="1800" max="2026" name="build_year" id="build_year" placeholder="ej. 1990" value="{{ form_data.build_year if form_data else '' }}">
+          </div>
+        </div>
+
+        <!-- UBICACIÓN CON TOGGLE -->
+        <div class="form-sec-title">Ubicación <span style="color:var(--primary)">• obligatoria</span></div>
+
+        <div class="location-toggle">
+          <button type="button" class="toggle-btn active" id="btn-barrio" onclick="switchLocation('barrio')">
+            🏘️ Elegir barrio
+          </button>
+          <button type="button" class="toggle-btn" id="btn-coords" onclick="switchLocation('coords')">
+            📍 Coordenadas exactas
+          </button>
+        </div>
+
+        <!-- Panel barrio -->
+        <div class="location-panel visible" id="panel-barrio">
+          <div class="form-group">
+            <label for="barrio_select">Barrio de Madrid <span class="req">•</span></label>
+            <select id="barrio_select" onchange="onBarrioChange(this)">
+              <option value="">— Selecciona un barrio —</option>
+              <optgroup label="Centro">
+                <option value="40.4168,-3.7038">Palacio</option>
+                <option value="40.4153,-3.6971">Embajadores</option>
+                <option value="40.4189,-3.6990">Cortes</option>
+                <option value="40.4220,-3.6930">Justicia</option>
+                <option value="40.4250,-3.6970">Universidad</option>
+                <option value="40.4185,-3.7080">Sol</option>
+              </optgroup>
+              <optgroup label="Arganzuela">
+                <option value="40.4023,-3.6972">Imperial</option>
+                <option value="40.3990,-3.6910">Acacias</option>
+                <option value="40.3958,-3.6870">Chopera</option>
+                <option value="40.3921,-3.6890">Legazpi</option>
+                <option value="40.3988,-3.6825">Delicias</option>
+                <option value="40.4012,-3.6760">Palos de Moguer</option>
+              </optgroup>
+              <optgroup label="Retiro">
+                <option value="40.4084,-3.6783">Pacífico</option>
+                <option value="40.4112,-3.6740">Adelfas</option>
+                <option value="40.4149,-3.6750">Estrella</option>
+                <option value="40.4185,-3.6780">Ibiza</option>
+                <option value="40.4120,-3.6850">Jerónimos</option>
+                <option value="40.4060,-3.6840">Niño Jesús</option>
+              </optgroup>
+              <optgroup label="Salamanca">
+                <option value="40.4290,-3.6820">Recoletos</option>
+                <option value="40.4265,-3.6760">Goya</option>
+                <option value="40.4245,-3.6690">Fuente del Berro</option>
+                <option value="40.4220,-3.6640">Guindalera</option>
+                <option value="40.4300,-3.6700">Lista</option>
+                <option value="40.4328,-3.6660">Castellana (Salamanca)</option>
+              </optgroup>
+              <optgroup label="Chamartín">
+                <option value="40.4480,-3.6850">El Viso</option>
+                <option value="40.4530,-3.6770">Prosperidad</option>
+                <option value="40.4600,-3.6720">Ciudad Jardín</option>
+                <option value="40.4650,-3.6640">Hispanoamérica</option>
+                <option value="40.4700,-3.6590">Nueva España</option>
+                <option value="40.4750,-3.6520">Castilla</option>
+              </optgroup>
+              <optgroup label="Tetuán">
+                <option value="40.4490,-3.7070">Bellas Vistas</option>
+                <option value="40.4540,-3.7020">Cuatro Caminos</option>
+                <option value="40.4570,-3.7100">Castillejos</option>
+                <option value="40.4520,-3.7160">Almenara</option>
+                <option value="40.4580,-3.7200">Valdeacederas</option>
+                <option value="40.4620,-3.7150">Berruguete</option>
+              </optgroup>
+              <optgroup label="Chamberí">
+                <option value="40.4350,-3.7050">Gaztambide</option>
+                <option value="40.4380,-3.7010">Arapiles</option>
+                <option value="40.4400,-3.6960">Trafalgar</option>
+                <option value="40.4330,-3.7000">Almagro</option>
+                <option value="40.4310,-3.6940">Ríos Rosas</option>
+                <option value="40.4290,-3.6880">Vallehermoso</option>
+              </optgroup>
+              <optgroup label="Fuencarral-El Pardo">
+                <option value="40.4820,-3.7050">El Pardo</option>
+                <option value="40.5050,-3.6950">Fuentelarreina</option>
+                <option value="40.4980,-3.7020">Peñagrande</option>
+                <option value="40.5120,-3.6870">La Paz</option>
+                <option value="40.5160,-3.6730">Valverde</option>
+                <option value="40.4850,-3.6900">Mirasierra</option>
+                <option value="40.4780,-3.6820">El Goloso</option>
+              </optgroup>
+              <optgroup label="Moncloa-Aravaca">
+                <option value="40.4330,-3.7340">Casa de Campo</option>
+                <option value="40.4385,-3.7280">Argüelles</option>
+                <option value="40.4420,-3.7180">Ciudad Universitaria</option>
+                <option value="40.4490,-3.7350">Valdezarza</option>
+                <option value="40.4550,-3.7500">Valdemarín</option>
+                <option value="40.4650,-3.7680">El Plantío</option>
+                <option value="40.4590,-3.7780">Aravaca</option>
+              </optgroup>
+              <optgroup label="Latina">
+                <option value="40.4050,-3.7340">Los Cármenes</option>
+                <option value="40.3980,-3.7280">Puerta del Ángel</option>
+                <option value="40.3920,-3.7350">Lucero</option>
+                <option value="40.3850,-3.7300">Aluche</option>
+                <option value="40.3800,-3.7420">Campamento</option>
+                <option value="40.3760,-3.7550">Cuatro Vientos</option>
+                <option value="40.3870,-3.7480">Las Águilas</option>
+              </optgroup>
+              <optgroup label="Carabanchel">
+                <option value="40.3820,-3.7180">Comillas</option>
+                <option value="40.3770,-3.7100">Opañel</option>
+                <option value="40.3720,-3.7020">San Isidro</option>
+                <option value="40.3670,-3.7080">Vista Alegre</option>
+                <option value="40.3640,-3.7200">Pradolongo</option>
+                <option value="40.3600,-3.7350">Moscardó</option>
+                <option value="40.3560,-3.7450">Buenavista (Carabanchel)</option>
+                <option value="40.3510,-3.7550">San Fermín</option>
+              </optgroup>
+              <optgroup label="Usera">
+                <option value="40.3890,-3.7050">Orcasitas</option>
+                <option value="40.3860,-3.6980">Pradolongo</option>
+                <option value="40.3920,-3.7100">Moscardó</option>
+                <option value="40.3940,-3.7050">Zofío</option>
+                <option value="40.3850,-3.6930">Pradillo</option>
+                <option value="40.3800,-3.6880">Almendrales</option>
+              </optgroup>
+              <optgroup label="Puente de Vallecas">
+                <option value="40.3940,-3.6620">Entrevías</option>
+                <option value="40.3880,-3.6680">San Diego</option>
+                <option value="40.3840,-3.6590">Palomeras Bajas</option>
+                <option value="40.3790,-3.6520">Palomeras Sureste</option>
+                <option value="40.3750,-3.6450">Portazgo</option>
+                <option value="40.3710,-3.6380">Numancia</option>
+              </optgroup>
+              <optgroup label="Moratalaz">
+                <option value="40.4050,-3.6490">Pavones</option>
+                <option value="40.4020,-3.6420">Horcajo</option>
+                <option value="40.3980,-3.6380">Marroquina</option>
+                <option value="40.3950,-3.6320">Media Legua</option>
+                <option value="40.3910,-3.6270">Fontarrón</option>
+                <option value="40.3870,-3.6300">Vinateros</option>
+              </optgroup>
+              <optgroup label="Ciudad Lineal">
+                <option value="40.4410,-3.6530">Ventas</option>
+                <option value="40.4440,-3.6460">Pueblo Nuevo</option>
+                <option value="40.4480,-3.6390">Quintana</option>
+                <option value="40.4520,-3.6330">Concepción</option>
+                <option value="40.4550,-3.6270">San Pascual</option>
+                <option value="40.4580,-3.6200">San Juan Bautista</option>
+                <option value="40.4620,-3.6140">Colina</option>
+                <option value="40.4660,-3.6090">Atalaya</option>
+                <option value="40.4700,-3.6040">Costillares</option>
+              </optgroup>
+              <optgroup label="Hortaleza">
+                <option value="40.4780,-3.6360">Palomas</option>
+                <option value="40.4820,-3.6300">Valdefuentes</option>
+                <option value="40.4860,-3.6240">Virgen del Cortijo</option>
+                <option value="40.4900,-3.6170">Apóstol Santiago</option>
+                <option value="40.4940,-3.6100">Piovera</option>
+                <option value="40.4980,-3.6040">Canillas</option>
+              </optgroup>
+              <optgroup label="Villaverde">
+                <option value="40.3480,-3.7020">Los Rosales</option>
+                <option value="40.3440,-3.6950">Los Ángeles</option>
+                <option value="40.3520,-3.6880">Butarque</option>
+                <option value="40.3560,-3.6820">San Cristóbal de los Ángeles</option>
+                <option value="40.3600,-3.6760">Pradillo (Villaverde)</option>
+              </optgroup>
+              <optgroup label="Villa de Vallecas">
+                <option value="40.3720,-3.6180">Casco Histórico de Vallecas</option>
+                <option value="40.3680,-3.6100">Santa Eugenia</option>
+              </optgroup>
+              <optgroup label="Vicálvaro">
+                <option value="40.4010,-3.6080">Casco Histórico de Vicálvaro</option>
+                <option value="40.4050,-3.5990">Ambroz</option>
+              </optgroup>
+              <optgroup label="San Blas - Canillejas">
+                <option value="40.4330,-3.6020">Simancas</option>
+                <option value="40.4360,-3.5950">Hellín</option>
+                <option value="40.4390,-3.5880">Amposta</option>
+                <option value="40.4420,-3.5810">Arcos</option>
+                <option value="40.4460,-3.5750">Rosas</option>
+                <option value="40.4490,-3.5690">Rejas</option>
+                <option value="40.4530,-3.5620">Canillejas</option>
+                <option value="40.4560,-3.5560">Salvador</option>
+              </optgroup>
+              <optgroup label="Barajas">
+                <option value="40.4720,-3.5740">Alameda de Osuna</option>
+                <option value="40.4780,-3.5680">Aeropuerto</option>
+                <option value="40.4840,-3.5610">Casco Histórico de Barajas</option>
+                <option value="40.4880,-3.5540">Timón</option>
+                <option value="40.4920,-3.5480">Corralejos</option>
+              </optgroup>
+            </select>
+            <div class="barrio-badge" id="barrio-badge">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5"/></svg>
+              <span id="barrio-badge-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel coordenadas -->
+        <div class="location-panel" id="panel-coords">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="latitud">Latitud <span class="req">•</span></label>
+              <input type="number" step="any" name="latitud" id="latitud" placeholder="ej. 40.416" value="{{ form_data.latitud if form_data else '' }}">
+            </div>
+            <div class="form-group">
+              <label for="longitud">Longitud <span class="req">•</span></label>
+              <input type="number" step="any" name="longitud" id="longitud" placeholder="ej. -3.703" value="{{ form_data.longitud if form_data else '' }}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden inputs para coordenadas del barrio -->
+        <input type="hidden" name="latitud" id="lat-hidden">
+        <input type="hidden" name="longitud" id="lng-hidden">
+
+        <div class="form-sec-title">Características opcionales</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="floor">Planta</label>
+            <input type="text" name="floor" id="floor" placeholder="ej. 3º" value="{{ form_data.floor if form_data else '' }}">
+          </div>
+          <div class="form-group">
+            <label for="exterior">Exterior</label>
+            <select name="exterior" id="exterior">
+              <option value="">Seleccionar</option>
+              <option value="Sí" {% if form_data and form_data.exterior == 'Sí' %}selected{% endif %}>Sí</option>
+              <option value="No" {% if form_data and form_data.exterior == 'No' %}selected{% endif %}>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="elevator">Ascensor</label>
+            <select name="elevator" id="elevator">
+              <option value="">Seleccionar</option>
+              <option value="Sí" {% if form_data and form_data.elevator == 'Sí' %}selected{% endif %}>Sí</option>
+              <option value="No" {% if form_data and form_data.elevator == 'No' %}selected{% endif %}>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="air_conditioning">Aire acondicionado</label>
+            <select name="air_conditioning" id="air_conditioning">
+              <option value="">Seleccionar</option>
+              <option value="Sí" {% if form_data and form_data.air_conditioning == 'Sí' %}selected{% endif %}>Sí</option>
+              <option value="No" {% if form_data and form_data.air_conditioning == 'No' %}selected{% endif %}>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="heating">Calefacción</label>
+            <input type="text" name="heating" id="heating" placeholder="ej. Gas natural" value="{{ form_data.heating if form_data else '' }}">
+          </div>
+          <div class="form-group">
+            <label for="conservation">Estado de conservación</label>
+            <input type="text" name="conservation" id="conservation" placeholder="ej. Buen estado" value="{{ form_data.conservation if form_data else '' }}">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">🏠 Estimar precio</button>
+      </form>
+
+      {% if prediction %}
+      <div class="result-box">
+        <div class="result-header">
+          <div class="result-icon">🏠</div>
+          <div>
+            <div class="result-label">Precio estimado de mercado</div>
+            <div class="result-price">€ {{ "{:,.0f}".format(prediction) }}</div>
+          </div>
+        </div>
+        <div class="result-body">
+          <span>ℹ️</span>
+          <span>Estimación generada por modelo ML entrenado con datos reales de Madrid. Resultado orientativo.</span>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="error-box">⚠️ {{ error }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section class="team-section" id="equipo">
+  <div class="team-inner">
+    <p class="section-label" style="color:#4f98a3; margin-bottom:14px;">El equipo</p>
+    <h2 class="team-title">Somos Pedro, Manuel y Milagros</h2>
+    <p class="team-subtitle">Tres estudiantes de Data Science que decidieron que los pisos en Madrid eran demasiado caros. <em>y</em> demasiado confusos. Así que hicimos algo al respecto.</p>
+
+    <div class="team-cards">
+
+      <div class="team-card">
+        <div class="team-avatar" style="background: linear-gradient(135deg, #0f766e, #10908a);">P</div>
+        <div class="team-name">Pedro</div>
+        <div class="team-tags">
+          <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Flask</span><span class="tag">EDA</span>
+        </div>
+      </div>
+
+      <div class="team-card featured">
+        <div class="team-avatar" style="background: linear-gradient(135deg, #c17f24, #e6c830);">M</div>
+        <div class="team-name">Manuel</div>
+        <div class="team-tags">
+          <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Pandas</span><span class="tag">EDA</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-avatar" style="background: linear-gradient(135deg, #7c3aed, #9f67f5);">M</div>
+        <div class="team-name">Milagros</div>
+          <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Pandas</span><span class="tag">EDA</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="project-stats">
+      <div class="pstat">
+        <div class="pstat-num">+5.000</div>
+        <div class="pstat-label">Pisos scrapeados</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-num">~81%</div>
+        <div class="pstat-label">Precisión del modelo</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-num">3</div>
+        <div class="pstat-label">Semanas de trabajo</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-num">∞</div>
+        <div class="pstat-label">Cafés consumidos</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-num">0</div>
+        <div class="pstat-label">Bugs en producción*</div>
+      </div>
+    </div>
+    <p style="text-align:center; color:rgba(255,255,255,0.2); font-size:0.72rem; margin-bottom: 32px;">*al momento de la presentación</p>
+
+    <div class="team-footer-note">
+      <div class="trust-badge">🤝</div>
+      <div>
+        <strong>¿Por qué confiar en nosotros?</strong>
+        <p>Porque pasamos semanas scrapeando, limpiando datos y discutiendo si el MAPE era suficientemente bueno como para mostrarle a alguien. Spoiler: decidimos que sí. Confiá en el proceso — y en los datos.
+          El modelo tiene un 81% de precisión. El 19% restante lo llamamos 'margen de creatividad del mercado'.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>PisoEstima</strong> &nbsp;·&nbsp; Estimador de precios inmobiliarios con Machine Learning &nbsp;·&nbsp; Madrid</p>
+  <p style="margin-top:10px;">Desarrollado como proyecto de bootcamp de Data Science &nbsp;·&nbsp; Estimación orientativa, no sustituye tasación oficial</p>
+</footer>
+
+<script>
+  let locationMode = 'barrio';
+
+  function switchLocation(mode) {
+    locationMode = mode;
+    document.getElementById('panel-barrio').classList.toggle('visible', mode === 'barrio');
+    document.getElementById('panel-coords').classList.toggle('visible', mode === 'coords');
+    document.getElementById('btn-barrio').classList.toggle('active', mode === 'barrio');
+    document.getElementById('btn-coords').classList.toggle('active', mode === 'coords');
+
+    // Si cambia a coords, limpiar hidden
+    if (mode === 'coords') {
+      document.getElementById('lat-hidden').value = '';
+      document.getElementById('lng-hidden').value = '';
+      // activar required en los visibles
+      document.getElementById('latitud').required = true;
+      document.getElementById('longitud').required = true;
+    } else {
+      document.getElementById('latitud').required = false;
+      document.getElementById('longitud').required = false;
+    }
+  }
+
+  function onBarrioChange(sel) {
+    const badge = document.getElementById('barrio-badge');
+    const badgeText = document.getElementById('barrio-badge-text');
+    if (!sel.value) { badge.classList.remove('visible'); return; }
+
+    const [lat, lng] = sel.value.split(',');
+    document.getElementById('lat-hidden').value = lat;
+    document.getElementById('lng-hidden').value = lng;
+
+    const label = sel.options[sel.selectedIndex].text;
+    const group = sel.options[sel.selectedIndex].parentElement.label;
+    badgeText.textContent = group + ' · ' + label + ' (' + lat + ', ' + lng + ')';
+    badge.classList.add('visible');
+  }
+
+  // Validación antes de enviar
+  document.getElementById('predict-form').addEventListener('submit', function(e) {
+    if (locationMode === 'barrio') {
+      const sel = document.getElementById('barrio_select');
+      if (!sel.value) {
+        e.preventDefault();
+        sel.focus();
+        sel.style.borderColor = '#e11d48';
+        sel.style.boxShadow = '0 0 0 3px rgba(225,29,72,0.15)';
+        setTimeout(() => { sel.style.borderColor = ''; sel.style.boxShadow = ''; }, 2000);
+        alert('Por favor, selecciona un barrio antes de continuar.');
+        return;
+      }
+      // desactivar los inputs de coords para no enviar duplicados
+      document.getElementById('latitud').disabled = true;
+      document.getElementById('longitud').disabled = true;
+    } else {
+      // desactivar los hidden
+      document.getElementById('lat-hidden').disabled = true;
+      document.getElementById('lng-hidden').disabled = true;
+    }
+  });
+
+  // Animación del resultado
+  document.querySelectorAll('.result-price').forEach(el => {
+    const num = parseFloat(el.textContent.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return;
+    let start = 0; const duration = 900;
+    const step = ts => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = '€ ' + Math.floor(ease * num).toLocaleString('es-ES');
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+
+  const resultBox = document.querySelector('.result-box');
+  if (resultBox) setTimeout(() => resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+
+  // Inicializar modo barrio
+  switchLocation('barrio');
+</script>
+</body>
+</html>
+<!-- Este append no funciona bien, mejor reescribir -->

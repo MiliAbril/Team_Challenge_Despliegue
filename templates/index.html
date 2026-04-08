@@ -243,10 +243,10 @@
       <a href="#estimador" class="pain-cta">Quiero saber el precio real <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
     <div class="pain-right">
-      <div class="pain-card"><div class="pain-icon">🏠</div><div><div class="pain-q">¿Querés vender tu piso y no sabés por cuánto?</div><div class="pain-a">Poner un precio demasiado alto espanta compradores. Demasiado bajo y perdés miles de euros. Sin referencias reales del mercado, es una apuesta a ciegas.</div></div></div>
-      <div class="pain-card"><div class="pain-icon">📋</div><div><div class="pain-q">¿Un tasador o agencia te dio un precio y no sabés si fue justo?</div><div class="pain-a">Las tasaciones tienen intereses propios. Con PisoEstima tenés un punto de comparación independiente, basado solo en datos del mercado.</div></div></div>
-      <div class="pain-card"><div class="pain-icon">🔍</div><div><div class="pain-q">¿Estás buscando piso y querés saber si el precio es razonable?</div><div class="pain-a">Antes de hacer una oferta o firmar, comprobá si el precio que piden está alineado con el mercado real de esa zona.</div></div></div>
-      <div class="pain-card"><div class="pain-icon">📊</div><div><div class="pain-q">¿Te pica la curiosidad de cuánto vale tu casa hoy?</div><div class="pain-a">El mercado cambia. Lo que valía tu piso hace 3 años puede ser muy distinto ahora. Tenelo claro en segundos.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">🏠</div><div><div class="pain-q">¿Quieres vender tu piso y no sabes por cuánto?</div><div class="pain-a">Poner un precio demasiado alto espanta compradores. Demasiado bajo y perdés miles de euros. Sin referencias reales del mercado, es una apuesta a ciegas.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">📋</div><div><div class="pain-q">¿Un tasador o agencia te dio un precio y no sabes si fue justo?</div><div class="pain-a">Las tasaciones tienen intereses propios. Con PisoEstima tenes un punto de comparación independiente, basado solo en datos del mercado.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">🔍</div><div><div class="pain-q">¿Estás buscando piso y Quieres saber si el precio es razonable?</div><div class="pain-a">Antes de hacer una oferta o firmar, comprueba si el precio que piden está alineado con el mercado real de esa zona.</div></div></div>
+      <div class="pain-card"><div class="pain-icon">📊</div><div><div class="pain-q">¿Te pica la curiosidad de cuánto vale tu casa hoy?</div><div class="pain-a">El mercado cambia. Lo que valía tu piso hace 3 años puede ser muy distinto ahora. Tenlo claro en segundos.</div></div></div>
       <div class="pain-divider"></div>
       <div class="pain-resolution"><div class="pain-resolution-icon">✅</div><div class="pain-resolution-text">PisoEstima está aquí para eso.<span>Una estimación honesta, basada en datos reales, en menos de un minuto. Sin agencias, sin comisiones.</span></div></div>
     </div>
@@ -260,7 +260,7 @@
   <p class="section-subtitle">Un sistema de machine learning entrenado con anuncios reales que aprende los factores clave que determinan el precio de un piso en Madrid.</p>
   <div class="steps">
     <div class="step"><div class="step-num">1</div><h3>Datos reales de mercado</h3><p>El modelo se entrenó con miles de anuncios inmobiliarios reales de Madrid, incluyendo superficie, ubicación, características del edificio y puntos de interés cercanos.</p></div>
-    <div class="step"><div class="step-num">2</div><h3>Elegís el barrio o coordenadas</h3><p>Podés seleccionar directamente el barrio de Madrid — el sistema asigna automáticamente las coordenadas. O introducir latitud/longitud si querés mayor precisión.</p></div>
+    <div class="step"><div class="step-num">2</div><h3>Eliges el barrio o coordenadas</h3><p>Puedes seleccionar directamente el barrio de Madrid — el sistema asigna automáticamente las coordenadas. O introducir latitud/longitud si Quieres mayor precisión.</p></div>
     <div class="step"><div class="step-num">3</div><h3>Predicción instantánea</h3><p>El modelo predice el precio de mercado en milisegundos. Los valores no introducidos se imputan automáticamente con la mediana del mercado madrileño.</p></div>
   </div>
 </section>
@@ -270,10 +270,10 @@
   <div class="form-card">
     <div class="form-sidebar">
       <div>
-        <h2>Estimá el precio de tu piso</h2>
-        <p>Introducí los datos de la vivienda. Los campos marcados con <strong>•</strong> son obligatorios. Los demás son opcionales y mejoran la precisión.</p>
+        <h2>Estima el precio de tu piso</h2>
+        <p>Introduce los datos de la vivienda. Los campos marcados con <strong>•</strong> son obligatorios. Los demás son opcionales y mejoran la precisión.</p>
         <ul class="feature-list">
-          <li>Elegí el barrio sin saber coordenadas</li>
+          <li>Elige el barrio sin saber coordenadas</li>
           <li>Estimación basada en datos reales del mercado</li>
           <li>Sin registro ni datos personales</li>
           <li>Resultado en menos de 1 segundo</li>
@@ -301,8 +301,8 @@
             <input type="number" step="1" min="0" name="banos" id="banos" placeholder="ej. 1" required value="{{ form_data.banos if form_data else '' }}">
           </div>
           <div class="form-group">
-            <label for="build_year">Año de construcción</label>
-            <input type="number" step="1" min="1800" max="2026" name="build_year" id="build_year" placeholder="ej. 1990" value="{{ form_data.build_year if form_data else '' }}">
+            <label for="build_year">Año de construcción <span class="req">•</span></label>
+            <input type="number" step="1" min="1800" max="2026" name="build_year" id="build_year" placeholder="ej. 1990" required value="{{ form_data.build_year if form_data else '' }}">
           </div>
         </div>
 
@@ -588,32 +588,35 @@
 <section class="team-section" id="equipo">
   <div class="team-inner">
     <p class="section-label" style="color:#4f98a3; margin-bottom:14px;">El equipo</p>
-    <h2 class="team-title">Somos Pedro, Manuel y Milagros</h2>
-    <p class="team-subtitle">Tres estudiantes de Data Science que decidieron que los pisos en Madrid eran demasiado caros. <em>y</em> demasiado confusos. Así que hicimos algo al respecto.</p>
+    <h2 class="team-title">Somos Milagros,Pedro y Manuel</h2>
+    <p class="team-subtitle">Tres estudiantes de Data Science que decidieron que los pisos en Madrid eran demasiado caros y demasiado confusos. Así que hicimos algo al respecto.</p>
 
     <div class="team-cards">
 
-      <div class="team-card">
-        <div class="team-avatar" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);">P</div>
-        <div class="team-name">Pedro</div>
+      <div class="team-card" > <a href="https://github.com/MiliAbril" style="text-decoration:none"> 
+        <div class="team-avatar" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);">M</div>
+        <div class="team-name">Milagros</div>
         <div class="team-tags">
           <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Flask</span><span class="tag">EDA</span>
         </div>
+        </a>
       </div>
 
-      <div class="team-card">
-        <div class="team-avatar" style="background: linear-gradient(135deg, #166534, #65d000);">M</div>
-        <div class="team-name">Manuel</div>
+      <div class="team-card"><a href="https://github.com/PedroHBas" style="text-decoration:none">
+        <div class="team-avatar" style="background: linear-gradient(135deg, #166534, #65d000);">P</div>
+        <div class="team-name">Pedro</div>
         <div class="team-tags">
           <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Pandas</span><span class="tag">EDA</span>
         </div>
+        </a>
       </div>
 
-      <div class="team-card">
+      <div class="team-card"> <a href="https://github.com/mrosm-dev" style="text-decoration:none">
         <div class="team-avatar" style="background: linear-gradient(135deg, #7c3aed, #9f67f5);">M</div>
-        <div class="team-name">Milagros</div>
+        <div class="team-name">Manuel</div>
           <span class="tag">Python</span><span class="tag">Sklearn</span><span class="tag">Pandas</span><span class="tag">EDA</span>
         </div>
+        </a>
       </div>
 
     </div>
@@ -647,7 +650,7 @@
       <div class="trust-badge">🤝</div>
       <div>
         <strong>¿Por qué confiar en nosotros?</strong>
-        <p>Porque pasamos semanas scrapeando, limpiando datos y discutiendo si el MAPE era suficientemente bueno como para mostrarle a alguien. Spoiler: decidimos que sí. Confiá en el proceso — y en los datos.
+        <p>Porque pasamos semanas scrapeando, limpiando datos y discutiendo si el MAPE era suficientemente bueno como para mostrarselo a alguien. Spoiler: decidimos que sí. Confía en el proceso y en los datos.
           El modelo tiene un 81% de precisión. El 19% restante lo llamamos 'margen de creatividad del mercado'.
         </p>
       </div>

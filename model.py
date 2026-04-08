@@ -21,30 +21,6 @@ os.chdir(os.path.dirname(__file__))
 
 df = pd.read_csv('./data/pisos_madrid.csv', sep='|')
 
-
-# # ── 2. Extracción del target (precio) ─────────────────────────────────────────
-# # precio es un diccionario string → extraemos la clave 'price' y limpiamos
-# def extraer_precio(precio_str):
-#     try:
-#         d = ast.literal_eval(precio_str) if isinstance(precio_str, str) else precio_str
-#         valor = d.get('price', None)
-#         if valor is None:
-#             return np.nan
-#         return float(str(valor).replace('.', '').replace(',', '.').strip())
-#     except:
-#         return np.nan
-
-# df['precio_final'] = df['precio'].apply(extraer_precio)
-# df = df.dropna(subset=['precio_final'])
-
-# y = df['precio_final'].values
-
-# # Eliminamos columnas que no son features o que causan data leakage
-# X = df.drop(columns=['precio_final', 'url', 'descripcion'])
-
-# # ── 3. Train/Test split ───────────────────────────────────────────────────────
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-
 # ── 2. Extracción del target (precio) ─────────────────────────────────────────
 y = df['precio'].astype(str).str.extract(r'([\d\.]+) €').replace(r'\.', '', regex=True).astype(int).squeeze()
 

@@ -134,6 +134,12 @@
     .result-price { color: white; font-family: var(--font-display); font-size: 2rem; line-height: 1; }
     .result-body { background: var(--primary-highlight); padding: 16px 24px; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
     .error-box { margin-top: 24px; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: var(--radius-md); padding: 16px 20px; color: #991b1b; font-size: 0.88rem; animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1); }
+    .result-summary { background: var(--surface); border: 1px solid var(--border); border-top: none; padding: 18px 24px 22px; }
+    .result-summary-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px; }
+    .result-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .result-summary-item { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .result-summary-label { display:block; font-size: 0.72rem; color: var(--text-faint); margin-bottom: 3px; }
+    .result-summary-value { display:block; font-size: 0.88rem; color: var(--text); font-weight: 600; line-height: 1.4; }
 
     footer { background: #111; color: rgba(255,255,255,0.45); padding: 40px 24px; text-align: center; font-size: 0.82rem; }
     footer strong { color: white; }
@@ -149,6 +155,7 @@
       .form-grid { grid-template-columns: 1fr; }
       .hero-stats { flex-wrap: wrap; gap: 16px; }
       .nav-links { display: none; }
+      .result-summary-grid { grid-template-columns: 1fr; }
     }
   
     /* EQUIPO */
@@ -517,6 +524,8 @@
         <!-- Hidden inputs para coordenadas del barrio -->
         <input type="hidden" name="latitud" id="lat-hidden">
         <input type="hidden" name="longitud" id="lng-hidden">
+        <input type="hidden" name="barrio_nombre" id="barrio-nombre-hidden" value="{{ form_data.barrio_nombre if form_data else "" }}">
+        <input type="hidden" name="modo_ubicacion" id="modo-ubicacion-hidden" value="{{ form_data.modo_ubicacion if form_data else "barrio" }}">
 
         <div class="form-sec-title">Características opcionales</div>
         <div class="form-grid">
@@ -573,6 +582,49 @@
         <div class="result-body">
           <span>ℹ️</span>
           <span>Estimación generada por modelo ML entrenado con datos reales de Madrid. Resultado orientativo.</span>
+        </div>
+        <div class="result-summary">
+          <div class="result-summary-title">Resumen de la vivienda estimada</div>
+          <div class="result-summary-grid">
+            <div class="result-summary-item">
+              <span class="result-summary-label">Ubicación</span>
+              <span class="result-summary-value">
+                {% if form_data and form_data.barrio_nombre %}
+                  {{ form_data.barrio_nombre }}
+                {% elif form_data and form_data.latitud and form_data.longitud %}
+                  {{ form_data.latitud }}, {{ form_data.longitud }}
+                {% else %}
+                  No especificada
+                {% endif %}
+              </span>
+            </div>
+            <div class="result-summary-item">
+              <span class="result-summary-label">Coordenadas</span>
+              <span class="result-summary-value">
+                {% if form_data and form_data.latitud and form_data.longitud %}
+                  {{ form_data.latitud }}, {{ form_data.longitud }}
+                {% else %}
+                  No especificadas
+                {% endif %}
+              </span>
+            </div>
+            <div class="result-summary-item">
+              <span class="result-summary-label">Superficie</span>
+              <span class="result-summary-value">{{ form_data.superficie_m2 if form_data and form_data.superficie_m2 else '—' }} m²</span>
+            </div>
+            <div class="result-summary-item">
+              <span class="result-summary-label">Dormitorios</span>
+              <span class="result-summary-value">{{ form_data.dormitorios if form_data and form_data.dormitorios else '—' }}</span>
+            </div>
+            <div class="result-summary-item">
+              <span class="result-summary-label">Baños</span>
+              <span class="result-summary-value">{{ form_data.banos if form_data and form_data.banos else '—' }}</span>
+            </div>
+            <div class="result-summary-item">
+              <span class="result-summary-label">Año de construcción</span>
+              <span class="result-summary-value">{{ form_data.build_year if form_data and form_data.build_year else 'No indicado' }}</span>
+            </div>
+          </div>
         </div>
       </div>
       {% endif %}
@@ -668,6 +720,7 @@
 
   function switchLocation(mode) {
     locationMode = mode;
+    document.getElementById('modo-ubicacion-hidden').value = mode;
     document.getElementById('panel-barrio').classList.toggle('visible', mode === 'barrio');
     document.getElementById('panel-coords').classList.toggle('visible', mode === 'coords');
     document.getElementById('btn-barrio').classList.toggle('active', mode === 'barrio');
@@ -677,6 +730,9 @@
     if (mode === 'coords') {
       document.getElementById('lat-hidden').value = '';
       document.getElementById('lng-hidden').value = '';
+      document.getElementById('barrio-nombre-hidden').value = '';
+      const badge = document.getElementById('barrio-badge');
+      if (badge) badge.classList.remove('visible');
       // activar required en los visibles
       document.getElementById('latitud').required = true;
       document.getElementById('longitud').required = true;
@@ -697,7 +753,9 @@
 
     const label = sel.options[sel.selectedIndex].text;
     const group = sel.options[sel.selectedIndex].parentElement.label;
-    badgeText.textContent = group + ' · ' + label + ' (' + lat + ', ' + lng + ')';
+    const barrioCompleto = group + ' · ' + label;
+    document.getElementById('barrio-nombre-hidden').value = barrioCompleto;
+    badgeText.textContent = barrioCompleto + ' (' + lat + ', ' + lng + ')';
     badge.classList.add('visible');
   }
 
@@ -742,8 +800,9 @@
   const resultBox = document.querySelector('.result-box');
   if (resultBox) setTimeout(() => resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
 
-  // Inicializar modo barrio
-  switchLocation('barrio');
+  // Inicializar modo guardado o barrio por defecto
+  const modoInicial = document.getElementById('modo-ubicacion-hidden')?.value || 'barrio';
+  switchLocation(modoInicial);
 </script>
 </body>
 </html>

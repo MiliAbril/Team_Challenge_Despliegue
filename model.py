@@ -31,7 +31,7 @@ X = df.drop(columns=['precio', 'url', 'descripcion'])
 # ── 3. Train/Test split ───────────────────────────────────────────────────────
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 
-# ── 4. Pipeline de features (igual que en el notebook) ───────────────────────
+# ── 4. Pipeline de features  ───────────────────────
 cluster_transformer = ColumnTransformer(
     [
         ('cluster', KMeansCluster(n_clusters=6), ['latitud','longitud'])
@@ -61,7 +61,7 @@ preprocess = ColumnTransformer(transformers=[
 ])
 
 # ── 6. Pipeline completa con XGBoost ─────────────────────────────────────────
-# Hiperparámetros obtenidos con Optuna en el notebook
+# Hiperparámetros obtenidos con Optuna
 best_params_xgb = {
     'model__n_estimators':      964,
     'model__learning_rate':     0.042358543385845486,
